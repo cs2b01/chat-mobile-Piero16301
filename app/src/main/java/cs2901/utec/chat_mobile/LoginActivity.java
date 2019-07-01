@@ -1,5 +1,6 @@
 package cs2901.utec.chat_mobile;
 
+import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.EditText;
@@ -23,6 +24,8 @@ import android.view.View;
 
 public class LoginActivity extends AppCompatActivity {
 
+    String loggedUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,11 +36,15 @@ public class LoginActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
+    public Activity getActivity() {
+        return this;
+    }
+
     public void onBtnLoginClicked(View view) {
         // 1. Getting username and password inputs from view
         EditText txtUsername = (EditText) findViewById(R.id.txtUsername);
         EditText txtPassword = (EditText) findViewById(R.id.txtPassword);
-        String username = txtUsername.getText().toString();
+        final String username = txtUsername.getText().toString();
         String password = txtPassword.getText().toString();
 
         // 2. Creating a message from user input data
@@ -61,11 +68,14 @@ public class LoginActivity extends AppCompatActivity {
                         String message = response.getString("message");
                         if(message.equals("Authorized")) {
                             showMessage("Authenticated");
+                            loggedUser = username;
+                            Intent intent = new Intent(getActivity(), ContactsActivity.class);
+                            startActivity(intent);
                         }
                         else {
                             showMessage("Wrong username or password");
                         }
-                        showMessage(response.toString());
+                        //showMessage(response.toString());
                     }catch (Exception e) {
                         e.printStackTrace();
                         showMessage(e.getMessage());
@@ -88,6 +98,10 @@ public class LoginActivity extends AppCompatActivity {
 
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(request);
+    }
+
+    public void currentUser(View view) {
+
     }
 
 }
