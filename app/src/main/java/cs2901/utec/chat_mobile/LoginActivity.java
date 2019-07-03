@@ -24,8 +24,6 @@ import android.view.View;
 
 public class LoginActivity extends AppCompatActivity {
 
-    String loggedUser;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,12 +61,10 @@ public class LoginActivity extends AppCompatActivity {
             new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    //TODO
                     try {
                         String message = response.getString("message");
                         if(message.equals("Authorized")) {
                             showMessage("Authenticated");
-                            loggedUser = username;
                             Intent intent = new Intent(getActivity(), ContactsActivity.class);
                             startActivity(intent);
                         }
@@ -98,10 +94,6 @@ public class LoginActivity extends AppCompatActivity {
 
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(request);
-    }
-
-    public void currentUser(View view) {
-
     }
 
 }
