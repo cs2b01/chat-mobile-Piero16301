@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.DownloadManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -28,19 +30,29 @@ import org.w3c.dom.Text;
 
 import android.view.View;
 
+import java.util.ArrayList;
+
 public class ContactsActivity extends AppCompatActivity {
 
-    private TextView mTextViewResult, mTextViewCurrent;
+    private RecyclerView mRecyclerView;
+    private list_adapter mExampleAdapter;
+    private ArrayList<ListContact> mExampleList;
+    //private TextView mTextViewResult;
     private RequestQueue mQueue;
-    private String idCurrent;
+    public int idCurrent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
 
-        mTextViewCurrent = findViewById(R.id.current_user);
-        mTextViewResult = findViewById(R.id.text_view_result);
+        //mTextViewCurrent = findViewById(R.id.current_user);
+        //mTextViewResult = findViewById(R.id.text_view_result);
+        mRecyclerView = findViewById(R.id.recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        mExampleList = new ArrayList<>();
 
         mQueue = Volley.newRequestQueue(this);
 
@@ -56,10 +68,11 @@ public class ContactsActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            idCurrent = response.getString("id");
+                            idCurrent = response.getInt("id");
                             String name = response.getString("name");
                             String fullname = response.getString("fullname");
-                            mTextViewCurrent.append(name + " " + fullname + "\n\n\n");
+                            setTitle(name + " " + fullname);
+                            //mTextViewCurrent.append("Bienvenido " + name + " " + fullname + "\n\n\n");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -84,13 +97,17 @@ public class ContactsActivity extends AppCompatActivity {
                         try {
                             for (int i = 0; i < response.length(); i++) {
                                 JSONObject user = response.getJSONObject(i);
-                                if (user.getString("id") != idCurrent) {
+                                if (user.getInt("id") != idCurrent) {
                                     String name = user.getString("name");
                                     String fullname = user.getString("fullname");
+                                    //System.out.println(user.getString("id" + "\n"));
+                                    String usuario = name + " " + fullname;
 
-                                    mTextViewResult.append(name + " " + fullname + "\n\n");
+                                    mExampleList.add(new ListContact(usuario));
                                 }
                             }
+                            mExampleAdapter = new list_adapter(ContactsActivity.this, mExampleList);
+                            mRecyclerView.setAdapter(mExampleAdapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
