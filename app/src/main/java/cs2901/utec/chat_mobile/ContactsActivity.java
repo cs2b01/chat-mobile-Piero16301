@@ -71,7 +71,8 @@ public class ContactsActivity extends AppCompatActivity {
                             idCurrent = response.getInt("id");
                             String name = response.getString("name");
                             String fullname = response.getString("fullname");
-                            setTitle(name + " " + fullname);
+                            String username = response.getString("username");
+                            setTitle(name + " " + fullname + " (" + username + ")");
                             //mTextViewCurrent.append("Bienvenido " + name + " " + fullname + "\n\n\n");
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -100,8 +101,9 @@ public class ContactsActivity extends AppCompatActivity {
                                 if (user.getInt("id") != idCurrent) {
                                     String name = user.getString("name");
                                     String fullname = user.getString("fullname");
+                                    String username = user.getString("username");
                                     //System.out.println(user.getString("id" + "\n"));
-                                    String usuario = name + " " + fullname;
+                                    String usuario = name + " " + fullname + " (" + username + ")";
 
                                     mExampleList.add(new ListContact(usuario));
                                 }
