@@ -56,12 +56,13 @@ public class MessageActivity extends AppCompatActivity {
         TextView inputText = (TextView)findViewById(R.id.txtMessage);
         postMessage();
         inputText.setText("");
+        getChats();
     }
 
     public void getChats() {
         final String userFromId = getIntent().getExtras().get("user_from_id").toString();
         final String userToId = getIntent().getExtras().get("user_to_id").toString();
-        String url = "http://10.0.2.2:8000/chats/<user_from_id>/<user_to_id>";
+        String url = "http://10.0.2.2:8080/chats/<user_from_id>/<user_to_id>";
         url = url.replace("<user_from_id>", userFromId);
         url = url.replace("<user_to_id>", userToId);
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -131,7 +132,7 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     public void postMessage() {
-        String url = "http://10.0.2.2:8000/messages";
+        String url = "http://10.0.2.2:8080/messages";
         RequestQueue queue = Volley.newRequestQueue(this);
         Map<String, String> params = new HashMap();
         final String user_from_id = getIntent().getExtras().get("user_from_id").toString();
