@@ -34,94 +34,59 @@ import java.util.ArrayList;
 
 public class ContactsActivity extends AppCompatActivity {
 
-    private RecyclerView mRecyclerView;
-    private list_adapter mExampleAdapter;
-    private ArrayList<ListContact> mExampleList;
-    //private TextView mTextViewResult;
-    private RequestQueue mQueue;
-    public int idCurrent;
+    RecyclerView mRecyclerView;
+    RecyclerView.Adapter mAdapter;
+    public String idCurrent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
-
-        //mTextViewCurrent = findViewById(R.id.current_user);
-        //mTextViewResult = findViewById(R.id.text_view_result);
-        mRecyclerView = findViewById(R.id.recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        mExampleList = new ArrayList<>();
-
-        mQueue = Volley.newRequestQueue(this);
-
-        jsonCurent();
-        jsonParse();
+        idCurrent = getIntent().getExtras().get("user_id").toString();
+        mRecyclerView = findViewById(R.id.main_recycler_view);
+        setTitle(getIntent().getExtras().get("name").toString() + " " + getIntent().getExtras().get("fullname").toString() + " (@" + getIntent().getExtras().get("username").toString() + ")");
     }
 
-    private void jsonCurent() {
-        String url = "http://10.0.2.2:8080/current";
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        getUsers();
+    }
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+    public Activity getActivity() {
+        return this;
+    }
+
+    public void getUsers() {
+        String url = "http://10.0.2.2:8080/users";
+        RequestQueue queue = Volley.newRequestQueue(this);
+        Map<String, String> params = new HashMap();
+        JSONObject parameters = new JSONObject(params);
+        final String userId = getIntent().getExtras().get("user_id").toString();
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                url,
+                parameters,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            idCurrent = response.getInt("id");
-                            String name = response.getString("name");
-                            String fullname = response.getString("fullname");
-                            String username = response.getString("username");
-                            setTitle(name + " " + fullname + " (" + username + ")");
-                            //mTextViewCurrent.append("Bienvenido " + name + " " + fullname + "\n\n\n");
+                            JSONArray data = response.getJSONArray("usuarios");
+                            mAdapter = new ChatAdapter(data, getActivity(), userId);
+                            mRecyclerView.setAdapter(mAdapter);
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        });
-
-        mQueue.add(request);
-    }
-
-    private void jsonParse() {
-        String url = "http://10.0.2.2:8080/users";
-
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        try {
-                            for (int i = 0; i < response.length(); i++) {
-                                JSONObject user = response.getJSONObject(i);
-                                if (user.getInt("id") != idCurrent) {
-                                    String name = user.getString("name");
-                                    String fullname = user.getString("fullname");
-                                    String username = user.getString("username");
-                                    //System.out.println(user.getString("id" + "\n"));
-                                    String usuario = name + " " + fullname + " (" + username + ")";
-
-                                    mExampleList.add(new ListContact(usuario));
-                                }
-                            }
-                            mExampleAdapter = new list_adapter(ContactsActivity.this, mExampleList);
-                            mRecyclerView.setAdapter(mExampleAdapter);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                },  new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
                         }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        });
-
-        mQueue.add(request);
+                    });
+        queue.add(jsonObjectRequest);
     }
 
 }

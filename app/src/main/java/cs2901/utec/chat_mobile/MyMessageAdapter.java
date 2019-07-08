@@ -13,16 +13,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
 public class MyMessageAdapter extends RecyclerView.Adapter<MyMessageAdapter.ViewHolder> {
 
     public JSONArray elements;
     private Context mContext;
     private int userFromId;
 
-    public MyMessageAdapter(JSONArray elements, Context context, int userFromId) {
+    public MyMessageAdapter(JSONArray elements, Context mcontext, int userFromId) {
         this.elements = elements;
-        this.mContext = context;
+        this.mContext = mcontext;
         this.userFromId = userFromId;
     }
 
